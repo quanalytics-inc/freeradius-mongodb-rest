@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  freeradius-mongo:
+    build:
+      context: ./
+      dockerfile: Dockerfile.radius # Specify the custom Dockerfile for FreeRADIUS
+    ports:
+      - '1812-1813:1812-1813/udp'
+    volumes:
+      - ./freeradius/config:/usr/local/etc/raddb
+    networks:
+      - radius_network
+
+  mongo:
+    image: mongo:4.0
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./mongo/data:/data/db
+    networks:
+      - radius_network
+
+  rest-api:
+    build:
+      context: ./
+    ports:
+      - '4000:4000'
+    depends_on:
+      - mongo
+      - freeradius-mongo
+    networks:
+      - radius_network
+
+networks:
+  radius_network:

@@ -1,0 +1,13 @@
+# Use a base image with FreeRADIUS pre-installed
+FROM freeradius/freeradius-server:latest
+
+# Copy custom configuration files
+COPY resources/freeradius/nano /usr/local/etc/raddb/sites-enabled/nano
+COPY resources/freeradius/rest /usr/local/etc/raddb/mods-enabled/rest
+COPY resources/freeradius/radiusd.conf /usr/local/etc/raddb/radiusd.conf
+
+# Expose ports for RADIUS authentication and accounting
+EXPOSE 1812/udp 1813/udp
+
+# Start FreeRADIUS server
+CMD ["radiusd", "-X"]
